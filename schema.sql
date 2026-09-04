@@ -27,10 +27,12 @@
 --   pay handles, access notes (shoulder / parking / ladder), QA notes, or
 --   plant access codes. Those live only here. SKILL.md makes this a hard rule.
 --
--- NOT A LEGAL AFFIDAVIT. The Proof Record is an internal posting-proof
--- (photo + matches-brief + damage). It is not a signed affidavit, not a
--- GeoPath / OAAA / Nielsen audit, and not a burned-in GPS stamp on the
--- image itself. Contract disputes still need whatever your counsel wants.
+-- NOT A LEGAL AFFIDAVIT / OFFICIAL POP. The Proof Record is an internal
+-- posting-proof (photo + matches-brief + damage). It is not a signed
+-- affidavit, not Geopath / MRC measurement, not Veridooh / Seedooh /
+-- Broadsign proof-of-play, not the media owner's official PoP certificate,
+-- and not a burned-in GPS stamp on the image itself. Contract disputes
+-- still need whatever your counsel wants.
 --
 -- TIME CONVENTIONS
 --   visits.scheduled_start / scheduled_end are FACE-LOCAL wall-clock times
@@ -38,6 +40,9 @@
 --   tz_offset to build the ISO strings shift_create needs.
 --   visits.checkin_at / checkout_at are ISO 8601 WITH an explicit offset, as
 --   recorded from ZenSched.
+--   tz_offset is a fixed string, not a zone name. Update it when US/UK/AU
+--   daylight saving changes (Dallas -05:00 mid-March to early November,
+--   -06:00 otherwise). India / Gulf / most of LATAM do not change.
 --
 -- MODEL
 --   campaigns → faces (places) → audit visits
