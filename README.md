@@ -14,10 +14,10 @@ If you *are* a developer, skip to [For developers](#for-developers).
 
 - **Not a legal posting affidavit.** The Proof Record has no signature field. On ZenSched a signature field replaces the Submit button, so adding one would make every stop look like someone had sworn something. Submitting the form is just submitting the form. Contract disputes still need whatever your counsel wants.
 - **Not a burned-in GPS stamp.** ZenSched stores date, time, and distance-from-the-pin on the server. It does **not** render those onto the image itself. If a buyer or a court wants a readable stamp on the photo, the auditor still uses a camera overlay.
-- **Not GeoPath, OAAA, or Nielsen measurement.** This kit does not produce ratings, circulation, or a certified audit. It is a photo log with a GPS punch.
+- **Not Geopath / MRC audience measurement, not Veridooh / Seedooh / Broadsign proof-of-play, and not the media owner's official PoP certificate.** This kit does not produce ratings, circulation, play logs, or a certified audit. A phone photo that an LED is lit is not a play log. It is a photo log with a GPS punch.
 - **Not an inventory / avail / proposal tool.** Faces here are places you send an auditor to, not a plant book, not a proposal, and not a vinyl or illumination log.
 
-If any of those is a deal-breaker, this kit is not for you. If you want campaign → face → visit dispatch, door-GPS (well, shoulder-GPS), and a local extract you can file next to the real affidavit, read on.
+If any of those is a deal-breaker, this kit is not for you. If you want campaign → face → visit dispatch, door-GPS (well, shoulder-GPS), and a local extract you can file next to the real affidavit / plant PoP, read on.
 
 ## What lives where
 
@@ -163,7 +163,7 @@ See `QUICKSTART.md` for the first-flight walkthrough and `example-workflow.md` f
 
 ### What "invoice" means here
 
-"Invoice Acme" records the invoice in your database (number, date, due date from the campaign's payment terms, visit count, fees, which visits) and the AI writes out a plain-text invoice you can paste into an email, with a line per approved visit (date, face label, posting / mid-flight / take-down, fee) and a note that every visit was GPS-verified with timestamped creative photos. It does **not** generate a PDF, email it for you, or collect payment, and it does **not** claim to be an affidavit. Auditor names never appear on it. When the buyer pays, tell the AI ("Acme paid INV-2026-0001") and it marks it paid.
+"Invoice Acme" records the invoice in your database (number, date, due date from the campaign's payment terms, visit count, fees, which visits) and the AI writes out a plain-text invoice you can paste into an email, with a line per approved visit (date, face label, posting / mid-flight / take-down, fee) and a note that every visit was GPS-verified with timestamped creative photos. It does **not** generate a PDF, email it for you, or collect payment, and it does **not** claim to be an affidavit, Geopath / MRC measurement, Veridooh / Broadsign play log, or the plant's official PoP certificate. Auditor names never appear on it. When the buyer pays, tell the AI ("Acme paid INV-2026-0001") and it marks it paid.
 
 ### What "auditor pay" means here
 
@@ -185,18 +185,19 @@ When you invite an auditor, they get an email, install the app, and can immediat
 | `SQLITE_PATH` points nowhere / "unable to open database" | Folder from step 1 does not exist | Create the folder; the file is created automatically but the folder is not |
 | ZenSched tools return an auth error | Key still says `zsc_your_key_here`, or was pasted with a space | Re-paste the key, restart |
 | `payment_required` | Metered call with no balance | Follow the instructions in the response; $5 deposit |
-| Denver visit created at the wrong hour | Face has the wrong `tz_offset` | "Set that face to Mountain time (-06:00)"; the AI fixes the face and updates the shift |
+| Denver visit created at the wrong hour | Face has the wrong `tz_offset`, or DST changed and it was not updated | "Set that face to Mountain time" — `-06:00` mid-March to early November, `-07:00` otherwise. The AI updates the face and the shift. |
+| AI creates shifts an hour early / late after clocks change | `faces.tz_offset` is a fixed offset that was not updated for daylight saving | US/UK/AU change; India, the Gulf, and most of LATAM do not. After the first Sunday of November, Dallas Central is `-06:00`. Update the face (and settings default), then `shift_update` any already-created shifts. |
 | AI refuses a campaign longer than 60 days | Working as intended; ZenSched events are capped at 60 days | Ask for it as monthly flights; the AI creates one campaign row and one set of events per window |
 | Auditor's check-in not GPS-verified at a highway bulletin | Auditor was outside the policy radius, or the pin is on the roadway | "Set the check-in radius to 300 m" (`policy_update`, account-wide), or "move the I-35 pin onto the structure" (`location_update`, free), or `location_refine` ($0.10). Do **not** ask to widen the radius "on that location" |
 | You also run drive-by / phone photos | Those cannot have a walked-up GPS punch | Keep policy 0 geofenced for roadside stops; ask the AI to give drive-by campaigns their own brand and policy (`policy_create` → `brand_create(policy_id=…)` → `event_create(brand_id=…)`) rather than flipping `remote_checkin` account-wide |
 | Auditor forgot to check out | Shift still `checked_in` | Tell the AI to use the form's submission time as check-out; ask for a check-out reminder (`checkout_reminder_min_after`) |
-| Auditor does not see the Proof Record | Form not assigned to that face's event | "Attach the Proof Record to the I-35 event" (`form_assign`) |
+| Auditor does not see the Proof Record | Form not assigned to that face's event | "Attach the Proof Record to the I-35 event" (`form_assign` on the event — installs on existing shifts; do not cancel and recreate the shift) |
 | "What's wrong on Acme" comes back empty | Visits not recorded yet, or everything matched with no damage | "Pull this week's proofs" first; `proof_exceptions` only lists No / Partial / damage |
 | A visit is flagged but the buyer is fine with it | Working as intended; flags are for you, not automatic rejections | Approve it and put the reason in the QA note |
 | Same face pasted twice in a CSV | Plant / address written differently | The AI normalizes plant + face + city; if it still created two faces, say "these are the same face" and it merges them (one geocode is wasted, $0.03) |
 | AI asks you to run SQL yourself | It does not have `SKILL.md` loaded | Re-paste `SKILL.md` as project instructions |
 | AI refuses to put a shoulder / gate note in ZenSched | Working as intended | Give it to the auditor directly |
-| AI offers an affidavit, GeoPath report, or OAAA certificate | It shouldn't | This kit does not produce those |
+| AI offers an affidavit, Geopath / MRC ratings, Veridooh / Broadsign play log, or the plant's official PoP certificate | It shouldn't | This kit does not produce those |
 
 If something is confusing or broken in ZenSched itself, ask the AI to call `feedback_submit` with a description. It is free, needs no account, and a human reads every submission.
 
@@ -227,9 +228,11 @@ If something is confusing or broken in ZenSched itself, ask the AI to call `feed
 - worker: `worker-{email}`
 - form: `form-proof-record`; assignment: `assign-proof-record-{event_id}`
 
+Never reuse a cancelled `shift-visit-{visit_id}` (24-hour replay returns the cancelled shift) — insert a fresh visit row. A campaign roll is a new `campaign_faces` row, so event keys do not collide with the prior window.
+
 ZenSched caches idempotent responses for 24 hours.
 
-**Timestamps.** `shift_create` takes `start` and `end` in ISO 8601 with an explicit offset, never `Z`. The offset is the **face's** (`faces.tz_offset`).
+**Timestamps.** `shift_create` takes `start` and `end` in ISO 8601 with an explicit offset, never `Z`. The offset is the **face's** (`faces.tz_offset`). That string is a fixed offset, not a zone name — update it when daylight saving starts or ends (US/UK/AU; India, the Gulf, and most of LATAM do not change). A September Dallas face at `-05:00` must be flipped to `-06:00` before November visits or those shifts land an hour off. See `SKILL.md` rule 8 and the Q4 split in `example-workflow.md`.
 
 **Metered reads.** `form_submissions` and `form_export` bill $0.05 per submission read ($0.15 with media; the creative photo makes every visit a media read), once per submission ever; replays are free. `shift_list`, `shift_status`, `event_get`, and `timesheet_export(mode="hours"|"raw")` are free.
 

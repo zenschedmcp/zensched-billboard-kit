@@ -4,7 +4,7 @@ Setup is about 15 minutes, once. After that everything is plain English to your 
 
 You need: Claude Desktop (or Cursor) and [Node.js LTS](https://nodejs.org/) installed. Nothing else.
 
-Before you start, read the "What this kit is not" section of `README.md`. Short version: this is GPS-verified posting proof plus a local extract of the Proof Record. It is **not** a legal affidavit, **not** a burned-in GPS stamp, and **not** a GeoPath / OAAA audit.
+Before you start, read the "What this kit is not" section of `README.md`. Short version: this is GPS-verified posting proof plus a local extract of the Proof Record. It is **not** a legal affidavit, **not** a burned-in GPS stamp, **not** Geopath / MRC measurement, **not** Veridooh / Seedooh / Broadsign proof-of-play, and **not** the media owner's official PoP certificate.
 
 ## 1. Make a data folder
 
@@ -103,6 +103,6 @@ Marks it paid.
 
 ## What next
 
-- `README.md` for the full explanation, the affidavit / GeoPath boundary, troubleshooting table, and developer notes
+- `README.md` for the full explanation, the affidavit / Geopath / Veridooh / Broadsign / official-PoP boundary, troubleshooting table, and developer notes
 - `example-workflow.md` to see the exact tool calls behind each step above
 - `SKILL.md` if you also run drive-by photos — it has the brand/policy recipe so you do not flip geofencing off for roadside stops

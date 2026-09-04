@@ -44,7 +44,7 @@ form_create:
 ```json
 [
   {"type": "section", "label": "Proof record", "identifier": "sec_proof",
-   "text": "Photograph the face so the creative is readable. This is an internal posting-proof record, not a legal affidavit and not a GeoPath or OAAA audit."},
+   "text": "Photograph the face so the creative is readable. This is an internal posting-proof record, not a legal affidavit, not Geopath / MRC measurement, not Veridooh / Seedooh / Broadsign proof-of-play, and not the media owner's official PoP certificate."},
   {"type": "photo", "label": "Creative up", "identifier": "creative_up", "required": true, "max_images": 2},
   {"type": "select", "label": "Matches brief", "identifier": "matches_brief", "required": true,
    "options": ["Yes", "No", "Partial"]},
@@ -58,7 +58,7 @@ form_create:
 sqlite_execute: UPDATE settings SET value = '501' WHERE key = 'proof_record_form_id';
 ```
 
-> Saved Sightline Audits in Central time (-05:00). Check-in radius is 200 m on the account policy (highway pull-offs); I will not set a radius "on a location." Proof Record created: creative photo up to 2, matches brief Yes / No / Partial, damage notes. No signature — this is an internal posting-proof, not an affidavit and not a GeoPath audit.
+> Saved Sightline Audits in Central time (-05:00 in September; I will flip Dallas faces to `-06:00` after the first Sunday of November). Check-in radius is 200 m on the account policy (highway pull-offs); I will not set a radius "on a location." Proof Record created: creative photo up to 2, matches brief Yes / No / Partial, damage notes. No signature — this is an internal posting-proof, not an affidavit, not Geopath / MRC, not Veridooh / Broadsign proof-of-play, and not the plant's official PoP certificate.
 
 ## "New campaign. Advertiser Acme Coffee, contact Priya Nair, priya@acme.example, billing ap@acme.example, net 30. Creative: Acme Iced cup on black. Sep 8 through Oct 5, any day 7 to 7, posting plus mid-flight. $40 a visit to them, auditors get $20. Faces: SL-DAL-1102 N, bulletin, I-35N at Commerce St, Dallas TX 75202, dusk to dawn, shoulder pull-off southbound / SL-DAL-880 A, street furniture, Elm and Griffin, Dallas TX 75201, curb cut on Elm."
 
@@ -276,13 +276,13 @@ form_export:
   → row_count: 2, rows: [
       { submission_id: 5501, worker_id: 701, event_id: 8101, submitted_at: "2026-09-10 09:09:40",
         data: { matches_brief: "yes", damage: "" },
-        media: [ { cdn_url: "https://cdn.zensched.com/m/.../b1.jpg" },
-                 { cdn_url: "https://cdn.zensched.com/m/.../b2.jpg" } ] },
+        media: [ { field_id: 12, cdn_url: "https://cdn.zensched.com/m/.../b1.jpg", thumbnail_url: "https://cdn.zensched.com/m/.../b1_t.jpg", original_filename: "b1.jpg" },
+                 { field_id: 12, cdn_url: "https://cdn.zensched.com/m/.../b2.jpg", thumbnail_url: "https://cdn.zensched.com/m/.../b2_t.jpg", original_filename: "b2.jpg" } ] },
       { submission_id: 5502, worker_id: 701, event_id: 8102, submitted_at: "2026-09-10 09:39:12",
         data: { matches_brief: "partial",
                 damage: "Lower third still last-flight vinyl (previous QSR). Upper two-thirds Acme Iced." },
-        media: [ { cdn_url: "https://cdn.zensched.com/m/.../s1.jpg" },
-                 { cdn_url: "https://cdn.zensched.com/m/.../s2.jpg" } ] }
+        media: [ { field_id: 12, cdn_url: "https://cdn.zensched.com/m/.../s1.jpg", thumbnail_url: "https://cdn.zensched.com/m/.../s1_t.jpg", original_filename: "s1.jpg" },
+                 { field_id: 12, cdn_url: "https://cdn.zensched.com/m/.../s2.jpg", thumbnail_url: "https://cdn.zensched.com/m/.../s2_t.jpg", original_filename: "s2.jpg" } ] }
     ]
     billing: { meter: "form_media", units: 2, price: 0.30 }
 
@@ -324,7 +324,7 @@ sqlite_query: SELECT * FROM visits_flagged WHERE qa_status = 'pending';
 >
 > SL-DAL-1102 N (I-35 bulletin): matches brief Yes, no damage, 13 minutes on site, 22 m from the pin.
 >
-> This is your copy of the Proof Record, not an affidavit. Want me to approve the bulletin and reopen the shelter as a make-good?
+> This is your copy of the Proof Record, not an affidavit, not Geopath / MRC, not Veridooh / Broadsign proof-of-play, and not the plant's official PoP. Want me to approve the bulletin and reopen the shelter as a make-good?
 
 ## "Approve the I-35 bulletin. The shelter is Partial — reopen it as a make-good."
 
@@ -392,7 +392,7 @@ sqlite_execute: UPDATE visits SET auditor_paid = 1 WHERE visit_id = 1;
 >
 > Total due: $40.00
 > Visit GPS-verified at the face with timestamped creative photos.
-> This is posting proof, not a legal affidavit.
+> This is posting proof, not a legal affidavit, not Geopath / MRC measurement, not Veridooh / Seedooh / Broadsign proof-of-play, and not the media owner's official PoP certificate.
 > ```
 >
 > Jordan pay sheet: 1 approved visit, $20.00, PayPal jordan@example.com. Say "sent" and "Jordan paid" when those are done. Shelter make-good is still open.
@@ -412,11 +412,18 @@ sqlite_execute: UPDATE auditor_payouts SET paid = 1, paid_date = date('now') WHE
 The schema rejects `flight_end` more than 59 days after `flight_start`. The agent splits:
 
 ```
--- window 1: 2026-09-08 .. 2026-11-06  (59 days)
--- window 2: 2026-11-07 .. 2026-12-06
+-- window 1: 2026-09-08 .. 2026-11-06  (59 days)  Dallas still -05:00 through Nov 1
+-- window 2: 2026-11-07 .. 2026-12-06            US Central DST ended 2026-11-01 → -06:00
 ```
 
-Two `campaigns` rows, two sets of `campaign_faces` events, same `faces` cache (no second geocode).
+Two `campaigns` rows, two sets of `campaign_faces` events (new `campaign_face_id`s, so `event-cf-{id}-{YYYYMMDD}` does not collide with window 1), same `faces` cache (no second geocode). Before assigning any visit on or after Nov 2, update Dallas faces:
+
+```
+sqlite_execute: UPDATE faces SET tz_offset = '-06:00' WHERE city = 'Dallas';
+sqlite_execute: UPDATE settings SET value = '-06:00' WHERE key = 'timezone_offset';
+```
+
+India / Gulf / most LATAM faces skip this. November `shift_create` then uses `2026-11-09T09:00:00-06:00`, not the September `-05:00`.
 
 ## Summary of who stored what
 
